@@ -1,6 +1,7 @@
 package net.kdt.pojavlaunch.modloaders;
 
 import com.kdt.mcgui.ProgressLayout;
+import com.kdt.mcgui.mcAccountSpinner;
 
 import net.kdt.pojavlaunch.JMinecraftVersionList;
 import net.kdt.pojavlaunch.R;
@@ -19,6 +20,7 @@ public class OptiFineDownloadTask implements Runnable, Tools.DownloaderFeedback,
     private static final Pattern sMcVersionPattern = Pattern.compile("([0-9]+)\\.([0-9]+)\\.?([0-9]+)?");
     private final OptiFineUtils.OptiFineVersion mOptiFineVersion;
     private final File mDestinationFile;
+    private mcAccountSpinner mAccountSpinner;
     private final ModloaderDownloadListener mListener;
     private final Object mMinecraftDownloadLock = new Object();
     private Throwable mDownloaderThrowable;
@@ -87,9 +89,12 @@ public class OptiFineDownloadTask implements Runnable, Tools.DownloaderFeedback,
         // the string is always normalized
         JMinecraftVersionList.Version minecraftJsonVersion = AsyncMinecraftDownloader.getListedVersion(minecraftVersion);
         if(minecraftJsonVersion == null) return false;
+        if(mAccountSpinner.getSelectedAccount() == null){
+            return false;
+        }
         try {
             synchronized (mMinecraftDownloadLock) {
-                new MinecraftDownloader().start(null, minecraftJsonVersion, minecraftVersion, this);
+                new MinecraftDownloader().start(null, minecraftJsonVersion, minecraftVersion, this, mAccountSpinner);
                 mMinecraftDownloadLock.wait();
             }
         }catch (InterruptedException e) {

@@ -3,6 +3,7 @@ package net.kdt.pojavlaunch;
 import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
 import android.Manifest;
 import android.app.NotificationManager;
+import android.content.DialogInterface;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -132,11 +133,13 @@ public class LauncherActivity extends BaseActivity {
         }
         String normalizedVersionId = AsyncMinecraftDownloader.normalizeVersionId(prof.lastVersionId);
         JMinecraftVersionList.Version mcVersion = AsyncMinecraftDownloader.getListedVersion(normalizedVersionId);
+        
         new MinecraftDownloader().start(
                 this,
                 mcVersion,
                 normalizedVersionId,
-                new ContextAwareDoneListener(this, normalizedVersionId)
+                new ContextAwareDoneListener(this, normalizedVersionId),
+                mAccountSpinner
         );
         return false;
     };
